@@ -121,13 +121,4 @@ fig = px.bar(x=order_day_counts.index, y=order_day_counts.values, labels={'x': '
 st.plotly_chart(fig, use_container_width=True)
 st.write("📅 **Grafik ini menunjukkan jumlah pesanan yang diterima di setiap hari dalam seminggu.**")
 
-st.subheader("🔍 Korelasi Keterlambatan Pengiriman vs. Rating")
-if 'delay_days' in all_df.columns and 'review_score' in all_df.columns:
-    fig = px.scatter(all_df, x='delay_days', y='review_score', title="Korelasi Keterlambatan vs. Rating", 
-                     labels={'delay_days': 'Hari Keterlambatan', 'review_score': 'Rating'}, trendline="ols")
-    st.plotly_chart(fig, use_container_width=True)
-    st.write("🔍 **Analisis ini membantu mengevaluasi apakah terdapat hubungan antara keterlambatan pengiriman dan tingkat kepuasan pelanggan.**")
-else:
-    st.warning("Data keterlambatan atau rating tidak tersedia.")
-
 st.write("📝 **Sumber Data:** `all_df.csv.gz`")
