@@ -1,2 +1,14 @@
-# Proyek-Analisis-Data-Dicoding
-Proyek analisis data e-commerce ini merupakan tugas Coding Camp yang menggunakan Python untuk mengolah, menganalisis, dan memvisualisasikan data guna mengungkap insight mendalam tentang tren dan performa bisnis.
+# Dashboard Proyek Analisis Data Dicoding
+
+Setup Environment - Anaconda
+conda create --name main-ds python=3.9
+conda activate main-ds
+pip install -r requirements.txt
+Setup Environment Shell/Terminal
+mkdir proyek_analisis_data
+cd proyek_analisis_data
+pipenv install
+pipenv shell
+pip install -r requirements.txt
+Run Streamlit App
+streamlit run dashboard.py
