@@ -130,4 +130,4 @@ if 'delay_days' in all_df.columns and 'review_score' in all_df.columns:
 else:
     st.warning("Data keterlambatan atau rating tidak tersedia.")
 
-st.write("📝 **Sumber Data:** `all_data.csv`")
+st.write("📝 **Sumber Data:** `all_df.csv.gz`")
