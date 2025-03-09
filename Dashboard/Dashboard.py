@@ -8,7 +8,7 @@ st.set_page_config(page_title="E-commerce Dashboard", page_icon="📊", layout="
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("all_df.csv.gz", parse_dates=['order_purchase_timestamp', 'order_delivered_customer_date', 'order_estimated_delivery_date'])
+    df = pd.read_csv("all_df.csv.gz/all_df.csv", parse_dates=['order_purchase_timestamp', 'order_delivered_customer_date', 'order_estimated_delivery_date'])
     return df
 
 all_df = load_data()
