@@ -8,7 +8,7 @@ st.set_page_config(page_title="E-commerce Dashboard", page_icon="📊", layout="
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("all_data (1).csv", parse_dates=['order_purchase_timestamp', 'order_delivered_customer_date', 'order_estimated_delivery_date'])
+    df = pd.read_csv("all_df.csv.gz", parse_dates=['order_purchase_timestamp', 'order_delivered_customer_date', 'order_estimated_delivery_date'])
     return df
 
 all_df = load_data()
@@ -130,4 +130,4 @@ if 'delay_days' in all_df.columns and 'review_score' in all_df.columns:
 else:
     st.warning("Data keterlambatan atau rating tidak tersedia.")
 
-st.write("📝 **Sumber Data:** `all_data.csv.gz`")
+st.write("📝 **Sumber Data:** `all_df.csv.gz`")
