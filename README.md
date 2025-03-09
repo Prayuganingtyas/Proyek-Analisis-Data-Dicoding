@@ -1,8 +1,8 @@
 # Dashboard Proyek Analisis Data Dicoding
 
 ## Setup Environment - Anaconda
-`conda create --name my-env python=3.9`
-`conda activate my-env`
+```conda create --name my-env python=3.9```
+```conda activate my-env```
 `pip install -r requirements.txt`
 
 ## Setup Environment Shell/Terminal
