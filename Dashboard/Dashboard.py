@@ -5,13 +5,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-# Konfigurasi halaman dashboard
 st.set_page_config(page_title="Dashboard E-commerce", page_icon="📊", layout="wide")
 
-# Fungsi untuk load data dari file kompresi .gz
 @st.cache_data
 def load_data():
-    # Pastikan file berada di folder yang benar. Contoh: jika file berada di folder "Dashboard", gunakan:
     data_path = os.path.join(os.path.dirname(__file__), "Dashboard/all_df.csv.gz")
     df = pd.read_csv(data_path, parse_dates=[
         'order_purchase_timestamp', 
@@ -20,14 +17,11 @@ def load_data():
     ])
     return df
 
-# Load data
 all_df = load_data()
 
-# Judul Dashboard
 st.title("📊 Dashboard E-commerce")
 st.markdown("---")
 
-# KPI Utama
 total_revenue = all_df['payment_value'].sum()
 total_orders = all_df.shape[0]
 total_customers = all_df['customer_unique_id'].nunique()
@@ -39,7 +33,6 @@ col3.metric("👥 Total Customers", f"{total_customers:,}")
 
 st.markdown("---")
 
-# Sidebar untuk filter rentang waktu
 st.sidebar.header("📅 Filter Rentang Waktu")
 start_date = st.sidebar.date_input("Mulai", all_df["order_purchase_timestamp"].min())
 end_date = st.sidebar.date_input("Selesai", all_df["order_purchase_timestamp"].max())
@@ -49,7 +42,6 @@ all_df = all_df[
     (all_df["order_purchase_timestamp"] <= pd.to_datetime(end_date))
 ]
 
-# 1. Kota Asal Seller Terbanyak
 st.subheader("🏙️ Kota Asal Seller Terbanyak")
 if 'seller_city' in all_df.columns:
     seller_counts = all_df['seller_city'].value_counts().head(10)
@@ -60,7 +52,6 @@ if 'seller_city' in all_df.columns:
 else:
     st.warning("Data kota seller tidak tersedia.")
 
-# 2. Tren Jumlah Pesanan 6 Bulan Terakhir
 st.subheader("📈 Tren Jumlah Pesanan 6 Bulan Terakhir")
 all_df['month_year'] = all_df['order_purchase_timestamp'].dt.to_period('M')
 order_trend = all_df.groupby('month_year').size().tail(6)
@@ -69,7 +60,6 @@ fig = px.line(order_trend, x=order_trend.index.astype(str), y=order_trend.values
 st.plotly_chart(fig, use_container_width=True)
 st.write("📊 **Tren ini membantu memahami pola belanja pelanggan dalam 6 bulan terakhir.**")
 
-# 3. Analisis Pelanggan Loyal (RFM Analysis)
 st.subheader("💎 Analisis Pelanggan Loyal")
 all_df['recency'] = (all_df['order_purchase_timestamp'].max() - all_df['order_purchase_timestamp']).dt.days
 df_rfm = all_df.groupby('customer_unique_id').agg({
@@ -89,7 +79,6 @@ df_rfm = rfm_segmentation(df_rfm)
 st.dataframe(df_rfm.sort_values(by='RFM_Score', ascending=False).head(10))
 st.write("👥 **Analisis ini membantu mengidentifikasi pelanggan paling berharga berdasarkan kebiasaan belanja mereka.**")
 
-# 4. Distribusi Rating Pelanggan
 st.subheader("⭐ Distribusi Rating Pelanggan")
 if 'review_score' in all_df.columns:
     fig = px.histogram(all_df, x='review_score', nbins=5, title="Distribusi Skor Review Pelanggan", 
@@ -99,7 +88,6 @@ if 'review_score' in all_df.columns:
 else:
     st.warning("Data rating pelanggan tidak tersedia.")
 
-# 5. Kontrol Keterlambatan Pengiriman
 st.subheader("⏳ Kontrol Keterlambatan Pengiriman")
 if 'order_delivered_customer_date' in all_df.columns:
     all_df['delay_days'] = (all_df['order_delivered_customer_date'] - all_df['order_estimated_delivery_date']).dt.days
@@ -110,7 +98,6 @@ if 'order_delivered_customer_date' in all_df.columns:
 else:
     st.warning("Data keterlambatan pengiriman tidak tersedia.")
 
-# 6. Perbandingan Estimasi vs Realisasi Pengiriman
 st.subheader("📦 Perbandingan Estimasi vs Realisasi Pengiriman")
 if 'delay_days' in all_df.columns:
     all_df['delivery_status'] = all_df['delay_days'].apply(lambda x: 'Lebih Cepat' if x < 0 else ('Tepat Waktu' if x == 0 else 'Terlambat'))
@@ -121,7 +108,6 @@ if 'delay_days' in all_df.columns:
 else:
     st.warning("Data keterlambatan tidak tersedia.")
 
-# 7. Kategori Produk Paling Laris
 st.subheader("🏆 Kategori Produk Paling Laris")
 if 'product_category_name' in all_df.columns:
     product_counts = all_df['product_category_name'].value_counts().head(10)
@@ -140,7 +126,6 @@ if 'product_category_name' in all_df.columns:
 else:
     st.warning("Data kategori produk tidak tersedia.")
 
-# 8. Distribusi Pesanan Berdasarkan Hari
 st.subheader("📆 Distribusi Pesanan Berdasarkan Hari")
 all_df['order_day'] = all_df['order_purchase_timestamp'].dt.day_name()
 days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -150,7 +135,6 @@ fig = px.bar(x=order_day_counts.index, y=order_day_counts.values,
 st.plotly_chart(fig, use_container_width=True)
 st.write("📅 **Grafik ini menunjukkan jumlah pesanan yang diterima di setiap hari dalam seminggu.**")
 
-# 9. Korelasi Keterlambatan Pengiriman vs. Rating
 st.subheader("🔍 Korelasi Keterlambatan Pengiriman vs. Rating")
 if 'delay_days' in all_df.columns and 'review_score' in all_df.columns:
     fig = px.scatter(all_df, x='delay_days', y='review_score', title="Korelasi Keterlambatan vs. Rating", 
@@ -159,16 +143,12 @@ if 'delay_days' in all_df.columns and 'review_score' in all_df.columns:
     st.write("🔍 **Analisis ini membantu mengevaluasi apakah terdapat hubungan antara keterlambatan pengiriman dan tingkat kepuasan pelanggan.**")
 else:
     st.warning("Data keterlambatan atau rating tidak tersedia.")
-
-# --- Tambahan Analisis yang Berguna untuk Perusahaan ---
-
-# 10. Nilai Pesanan Rata-rata (Average Order Value / AOV)
+    
 st.subheader("💵 Nilai Pesanan Rata-rata (AOV)")
 aov = total_revenue / total_orders if total_orders > 0 else 0
 st.metric("AOV", f"${aov:,.2f}")
 st.write("📌 **AOV menunjukkan rata-rata nilai pesanan per transaksi, berguna untuk mengukur kinerja penjualan.**")
 
-# 11. Pendapatan Berdasarkan Kota Seller
 st.subheader("📊 Revenue Berdasarkan Kota Seller")
 if 'seller_city' in all_df.columns:
     revenue_by_city = all_df.groupby('seller_city')['payment_value'].sum().sort_values(ascending=False).head(10)
@@ -179,7 +159,6 @@ if 'seller_city' in all_df.columns:
 else:
     st.warning("Data seller city tidak tersedia.")
 
-# 12. Pelanggan Teratas Berdasarkan Pendapatan
 st.subheader("🏆 Pelanggan Teratas Berdasarkan Revenue")
 top_customers = all_df.groupby('customer_unique_id')['payment_value'].sum().sort_values(ascending=False).head(10)
 fig = px.bar(top_customers, x=top_customers.index, y=top_customers.values, 
@@ -187,7 +166,6 @@ fig = px.bar(top_customers, x=top_customers.index, y=top_customers.values,
 st.plotly_chart(fig, use_container_width=True)
 st.write("👑 **Mengidentifikasi pelanggan dengan pengeluaran tinggi dapat membantu strategi pemasaran yang lebih tepat sasaran.**")
 
-# 13. Revenue Bulanan & Tingkat Pertumbuhan
 st.subheader("📈 Revenue Bulanan & Tingkat Pertumbuhan")
 monthly_revenue = all_df.groupby(all_df['order_purchase_timestamp'].dt.to_period('M'))['payment_value'].sum().sort_index()
 monthly_revenue_df = monthly_revenue.to_frame().reset_index()
