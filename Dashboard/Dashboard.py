@@ -121,4 +121,39 @@ fig = px.bar(x=order_day_counts.index, y=order_day_counts.values, labels={'x': '
 st.plotly_chart(fig, use_container_width=True)
 st.write("📅 **Grafik ini menunjukkan jumlah pesanan yang diterima di setiap hari dalam seminggu.**")
 
+st.subheader("💵 Nilai Pesanan Rata-rata (AOV)")
+aov = total_revenue / total_orders if total_orders > 0 else 0
+st.metric("AOV", f"${aov:,.2f}")
+st.write("📌 **AOV menunjukkan rata-rata nilai pesanan per transaksi, berguna untuk mengukur kinerja penjualan.**")
+
+# 11. Pendapatan Berdasarkan Kota Seller
+st.subheader("📊 Pendapatan Berdasarkan Kota Seller")
+if 'seller_city' in all_df.columns:
+    revenue_by_city = all_df.groupby('seller_city')['payment_value'].sum().sort_values(ascending=False).head(10)
+    fig = px.bar(revenue_by_city, x=revenue_by_city.index, y=revenue_by_city.values, 
+                 labels={'x': 'Kota Seller', 'y': 'Total Pendapatan'}, title="Top 10 Kota Seller Berdasarkan Pendapatan")
+    st.plotly_chart(fig, use_container_width=True)
+    st.write("📈 **Grafik ini membantu mengidentifikasi kota dengan potensi penjualan tinggi.**")
+else:
+    st.warning("Data seller city tidak tersedia.")
+
+# 12. Pelanggan Teratas Berdasarkan Pendapatan
+st.subheader("🏆 Pelanggan Teratas Berdasarkan Pendapatan")
+top_customers = all_df.groupby('customer_unique_id')['payment_value'].sum().sort_values(ascending=False).head(10)
+fig = px.bar(top_customers, x=top_customers.index, y=top_customers.values, 
+             labels={'x': 'ID Pelanggan', 'y': 'Total Pendapatan'}, title="Top 10 Pelanggan Berdasarkan Pendapatan")
+st.plotly_chart(fig, use_container_width=True)
+st.write("👑 **Mengidentifikasi pelanggan dengan pengeluaran tinggi dapat membantu strategi pemasaran yang lebih tepat sasaran.**")
+
+# 13. Pendapatan Bulanan & Tingkat Pertumbuhan
+st.subheader("📈 Pendapatan Bulanan & Tingkat Pertumbuhan")
+monthly_revenue = all_df.groupby(all_df['order_purchase_timestamp'].dt.to_period('M'))['payment_value'].sum().sort_index()
+monthly_revenue_df = monthly_revenue.to_frame().reset_index()
+monthly_revenue_df['bulan_tahun'] = monthly_revenue_df['order_purchase_timestamp'].astype(str)
+monthly_revenue_df['tingkat_pertumbuhan'] = monthly_revenue_df['payment_value'].pct_change() * 100
+fig = px.bar(monthly_revenue_df, x='bulan_tahun', y='payment_value', 
+             title="Pendapatan Bulanan", labels={'payment_value': 'Pendapatan'})
+st.plotly_chart(fig, use_container_width=True)
+st.write("📊 **Grafik ini memberikan gambaran tren pendapatan bulanan dan pertumbuhan penjualan.**")
+
 st.write("📝 **Sumber Data:** all_df.csv.gz")
